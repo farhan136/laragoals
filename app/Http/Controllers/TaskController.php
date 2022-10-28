@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Task;
 use App\Models\User;
+use Mail;
+Use App\Mail\GeneralMail;
 
 class TaskController extends Controller
 {
@@ -19,7 +21,6 @@ class TaskController extends Controller
         }else{
            $task = Task::all();
         }
-        
         $data = array(
             'tasks'=>$task,
             'is_admin'=>$is_admin
@@ -63,6 +64,13 @@ class TaskController extends Controller
             $task->created_by = Auth::user()->id;
             $task->priority_level = $request->level;
             $task->save();
+
+            //get email pic
+            $email_pic = User::select('email')->get();
+            $email_pic = $email_pic[0]->email;
+
+            //kirim email setelah membuat task
+            Mail::to($email_pic)->send(new GeneralMail($task));
         }
         // return $task;
         
