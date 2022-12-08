@@ -40,21 +40,23 @@ class TaskController extends Controller
         return view('task.form', $data);
     }
 
-    public function store(Request $request, Task $task_update)
+    public function store(Request $request, Task $task)
     {
         $validated = $request->validate([
-            'content'=>"required_if:".$task_update.",==,''|string",
+            'content'=>"required_if:".$task.",==,''|string",
             'status'=>'required',
-            'deadline' => "required_if:".$task_update.",==,''",
-            'level' => "required_if:".$task_update.",==,''",
-            'pic'=>"required_if:".$task_update.",==,''",
+            'deadline' => "required_if:".$task.",==,''",
+            'level' => "required_if:".$task.",==,''",
+            'pic'=>"required_if:".$task.",==,''",
         ]);
-        // return $task_update;
+        // return $task;
 
-        if(empty($task_update)){
-            $task_update->status = $request->status;
-            $task_update->updated_by = Auth::user()->id;
-            $task_update->save();
+
+        if(!empty($task)){
+            $task->status = $request->status;
+            $task->updated_by = Auth::user()->id;
+            $task->save();
+            $message = 'You already update the task';
         }else{
             $task = new Task;
             $task->content = $request->content;
@@ -71,11 +73,12 @@ class TaskController extends Controller
 
             //kirim email setelah membuat task
             Mail::to($email_pic)->send(new GeneralMail($task));
+            $message = 'You already make new task';
         }
         // return $task;
         
 
-        $request->session()->flash('success', empty($task_update)? 'You already make new task': 'You already update the task');
+        $request->session()->flash('success',$message);
         return redirect(route('todo.index'));
     }
 
