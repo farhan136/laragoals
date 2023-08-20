@@ -51,8 +51,7 @@ class TaskController extends Controller
         ]);
         // return $task;
 
-
-        if(!empty($task)){
+        if(!empty($task->id)){
             $task->status = $request->status;
             $task->updated_by = Auth::user()->id;
             $task->save();
@@ -67,12 +66,12 @@ class TaskController extends Controller
             $task->priority_level = $request->level;
             $task->save();
 
-            //get email pic
-            $email_pic = User::select('email')->get();
-            $email_pic = $email_pic[0]->email;
+            // //get email pic
+            // $email_pic = User::select('email')->get();
+            // $email_pic = $email_pic[0]->email;
 
-            //kirim email setelah membuat task
-            Mail::to($email_pic)->send(new GeneralMail($task));
+            // //kirim email setelah membuat task
+            // Mail::to($email_pic)->send(new GeneralMail($task));
             $message = 'You already make new task';
         }
         // return $task;
